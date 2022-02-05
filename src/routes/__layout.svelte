@@ -1,61 +1,59 @@
 <script lang="ts">
-	import Button from '@smui/button';
-	import TopAppBar, {
-		Row,
-		Section,
-		Title,
-		AutoAdjust,
-		TopAppBarComponentDev
-	} from '@smui/top-app-bar';
-	import IconButton from '@smui/icon-button';
-	import { Label, Icon } from '@smui/common';
-	import { Svg } from '@smui/common/elements';
-	import { mdiGithub, mdiWeb } from '@mdi/js';
+  // @smui
+  import Button from '@smui/button';
+  import TopAppBar, { AutoAdjust, TopAppBarComponentDev } from '@smui/top-app-bar';
+  import { Label } from '@smui/common';
+  import { AppContent } from '@smui/drawer';
+  // layouts
+  import Sidebar from '../components/layouts/Sidebar.svelte';
+  import HeaderBar from '../components/layouts/HeaderBar.svelte';
 
-	let topAppBar: TopAppBarComponentDev;
+  let topAppBar: TopAppBarComponentDev;
 
-	let lightTheme =
-		typeof window === 'undefined' || window.matchMedia('(prefers-color-scheme: light)').matches;
-	function switchTheme() {
-		lightTheme = !lightTheme;
-		let themeLink = document.head.querySelector<HTMLLinkElement>('#theme');
-		if (!themeLink) {
-			themeLink = document.createElement('link');
-			themeLink.rel = 'stylesheet';
-			themeLink.id = 'theme';
-		}
-		themeLink.href = `/smui${lightTheme ? '' : '-dark'}.css`;
-		document.head
-			.querySelector<HTMLLinkElement>('link[href="/smui-dark.css"]')
-			?.insertAdjacentElement('afterend', themeLink);
-	}
+  let open = true;
 </script>
 
-<TopAppBar bind:this={topAppBar} variant="standard">
-	<Row>
-		<Section>
-			<Title>My App</Title>
-		</Section>
-		<Section align="end" toolbar>
-			<IconButton aria-label="GitHub" href="https://github.com/hperrin/svelte-material-ui">
-				<Icon component={Svg} viewBox="0 0 24 24">
-					<path fill="currentColor" d={mdiGithub} />
-				</Icon>
-			</IconButton>
-			<IconButton aria-label="Demo Site" href="https://sveltematerialui.com">
-				<Icon component={Svg} viewBox="0 0 24 24">
-					<path fill="currentColor" d={mdiWeb} />
-				</Icon>
-			</IconButton>
-		</Section>
-	</Row>
+<TopAppBar bind:this={topAppBar} variant="fixed">
+  <HeaderBar />
 </TopAppBar>
 
-<AutoAdjust {topAppBar} style="display: flex; justify-content: space-between;">
-	<div class="container"><slot /></div>
-	<div class="container">
-		<Button on:click={switchTheme}>
-			<Label>{lightTheme ? 'Lights off' : 'Lights on'}</Label>
-		</Button>
-	</div>
+<AutoAdjust {topAppBar} style="display: flex; justify-content: space-between; align-item: center;">
+  <div class="drawer-container">
+    <Sidebar {open} />
+    <AppContent class="app-content">
+      <main class="main-content">
+        <div class="container">
+          <Button on:click={() => (open = !open)}>
+            <Label>전체메뉴 {open ? '닫기' : '열기'}</Label>
+          </Button>
+          <slot />
+        </div>
+      </main>
+    </AppContent>
+  </div>
 </AutoAdjust>
+
+<style>
+  /* These classes are only needed because the
+    drawer is in a container on the page. */
+  .drawer-container {
+    position: relative;
+    display: flex;
+    border: 1px solid var(--mdc-theme-text-hint-on-background, rgba(0, 0, 0, 0.1));
+    overflow: hidden;
+    z-index: 0;
+  }
+
+  .main-content {
+    overflow: auto;
+    padding: 16px;
+    height: 100%;
+    box-sizing: border-box;
+  }
+  * :global(.app-content) {
+    flex: auto;
+    overflow: auto;
+    position: relative;
+    flex-grow: 1;
+  }
+</style>
