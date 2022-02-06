@@ -15,6 +15,10 @@
 
     user.init({ accountAddress, signer });
   }
+
+  $: if (typeof window !== 'undefined') {
+    handleLogin();
+  }
 </script>
 
 <IconButton on:click={handleLogin}>

@@ -17,17 +17,15 @@
   <HeaderBar />
 </TopAppBar>
 
-<AutoAdjust {topAppBar} style="display: flex; justify-content: space-between; align-item: center;">
+<AutoAdjust {topAppBar}>
   <div class="drawer-container">
     <Sidebar {open} />
     <AppContent class="app-content">
       <main class="main-content">
-        <div class="container">
-          <Button on:click={() => (open = !open)}>
-            <Label>전체메뉴 {open ? '닫기' : '열기'}</Label>
-          </Button>
-          <slot />
-        </div>
+        <Button on:click={() => (open = !open)}>
+          <Label>전체메뉴 {open ? '닫기' : '열기'}</Label>
+        </Button>
+        <slot />
       </main>
     </AppContent>
   </div>

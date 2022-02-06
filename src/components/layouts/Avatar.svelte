@@ -1,9 +1,11 @@
 <script lang="ts">
   // @smui
+  import Button, { Label } from '@smui/button';
   import IconButton, { Icon } from '@smui/icon-button';
   import Menu, { MenuComponentDev } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Text, Graphic } from '@smui/list';
+  import { routes } from '../../config/routes';
   // store
 
   let menu: MenuComponentDev;
@@ -35,11 +37,7 @@
     <List dense>
       <Item>
         <Graphic class="material-icons">card_giftcard</Graphic>
-        <Text>상품 등록하기</Text>
-      </Item>
-      <Item>
-        <Graphic class="material-icons">assignment_ind</Graphic>
-        <Text>내 정보 수정</Text>
+        <Text><Button href={routes.product.create}><Label>상품 등록하기</Label></Button></Text>
       </Item>
     </List>
   </Menu>

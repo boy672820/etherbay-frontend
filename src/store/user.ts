@@ -12,6 +12,8 @@ class UserStore {
     this._accountAddress.set(accountAddress);
     this._signer.set(signer);
     this._isLogin.set(true);
+
+    console.log('User initialization complete: ', accountAddress);
   }
 
   async logout() {
