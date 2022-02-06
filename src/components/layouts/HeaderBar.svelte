@@ -4,11 +4,13 @@
   import { Row, Section } from '@smui/top-app-bar';
   // components
   import Avatar from './Avatar.svelte';
+  import Login from './Login.svelte';
   // config
   import { routes } from '../../config/routes';
+  // store
+  import { user } from '../../store/user';
 
-  // props
-  // export let topAppBar;
+  const { isLogin } = user;
 
   let lightTheme =
     typeof window === 'undefined' || window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -30,8 +32,6 @@
       .querySelector<HTMLLinkElement>('link[href="/smui-dark.css"]')
       ?.insertAdjacentElement('afterend', themeLink);
   }
-
-  const user = null;
 </script>
 
 <Row>
@@ -41,12 +41,10 @@
     </a>
   </Section>
   <Section align="end" toolbar>
-    {#if user}
+    {#if $isLogin}
       <Avatar />
     {:else}
-      <IconButton href={routes.auth.login}>
-        <Icon class="material-icons">login</Icon>
-      </IconButton>
+      <Login />
     {/if}
 
     <IconButton on:click={switchTheme}>

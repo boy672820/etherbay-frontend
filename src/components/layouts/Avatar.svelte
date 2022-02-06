@@ -1,8 +1,10 @@
 <script lang="ts">
+  // @smui
   import IconButton, { Icon } from '@smui/icon-button';
   import Menu, { MenuComponentDev } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Text, Graphic } from '@smui/list';
+  // store
 
   let menu: MenuComponentDev;
   let anchor: HTMLDivElement;
