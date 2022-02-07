@@ -4,6 +4,7 @@
   import HelperText from '@smui/textfield/helper-text';
   import Chip, { Set, Text } from '@smui/chips';
   import Button, { Label, Icon } from '@smui/button';
+  import { variables } from '$lib/variables';
 
   let categories = ['IT/전자제품', '옷', '카메라', '소모품'];
 
@@ -15,6 +16,8 @@
   const handleSubmit = () => {
     console.log(category);
   };
+
+  console.log(variables);
 </script>
 
 <svelte:head>
