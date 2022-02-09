@@ -4,7 +4,10 @@
   import HelperText from '@smui/textfield/helper-text';
   import Chip, { Set, Text } from '@smui/chips';
   import Button, { Label, Icon } from '@smui/button';
-  import { variables } from '$lib/variables';
+  import { user } from '../../store/user';
+  import { product } from '../../store/product';
+
+  const { signer } = user;
 
   let categories = ['IT/전자제품', '옷', '카메라', '소모품'];
 
@@ -13,11 +16,9 @@
     image = '',
     category = categories[0];
 
-  const handleSubmit = () => {
-    console.log(category);
+  const handleSubmit = async () => {
+    product.createProduct($signer, { name, category, description, image });
   };
-
-  console.log(variables);
 </script>
 
 <svelte:head>

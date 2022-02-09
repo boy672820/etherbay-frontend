@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   // @smui
   import IconButton, { Icon } from '@smui/icon-button';
   // libraries
@@ -7,6 +8,10 @@
   import { user } from '../../store/user';
 
   async function handleLogin() {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
     const provider = new ethers.providers.Web3Provider(window.ethereum);
     await provider.send('eth_requestAccounts', []);
 
@@ -16,9 +21,9 @@
     user.init({ accountAddress, signer });
   }
 
-  $: if (typeof window !== 'undefined') {
+  onMount(() => {
     handleLogin();
-  }
+  });
 </script>
 
 <IconButton on:click={handleLogin}>
