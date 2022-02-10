@@ -8,6 +8,7 @@
   import { product } from '../../store/product';
 
   const { signer } = user;
+  const { isLoading, error } = product;
 
   let categories = ['IT/전자제품', '옷', '카메라', '소모품'];
 
@@ -16,8 +17,11 @@
     image = '',
     category = categories[0];
 
-  const handleSubmit = async () => {
-    product.createProduct($signer, { name, category, description, image });
+  const handleSubmit = () => {
+    product
+      .connect($signer)
+      .createProduct({ name, category, description, image })
+      .catch((e) => console.log(e));
   };
 </script>
 

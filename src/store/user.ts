@@ -5,7 +5,7 @@ class UserStore {
   constructor(
     private _isLogin: Writable<isLogin> = writable(false),
     private _accountAddress: Writable<accountAddress | null> = writable(null),
-    private _signer: Writable<signer | null> = writable(null)
+    private _signer: Writable<signer> = writable(null)
   ) {}
 
   async init({ accountAddress, signer }: UserState) {
