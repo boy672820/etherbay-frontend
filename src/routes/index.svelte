@@ -2,7 +2,7 @@
   // @smui
   import LayoutGrid, { Cell } from '@smui/layout-grid';
   // components
-  import Product from '../components/Product.svelte';
+  import Product from '../components/product/Product.svelte';
 </script>
 
 <svelte:head>

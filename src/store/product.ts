@@ -57,14 +57,16 @@ class ProductStore {
 
     this.ready();
 
-    try {
-      const contract = this.contract.connect(this.signer);
+    await new Promise((resolve) => setTimeout(resolve, 3000));
 
-      this.running = await contract.createProduct(name, category, description, image);
-    } catch (e) {
-      this.exception('상품을 블록체인에 생성 중 문제가 발생했습니다.');
-      throw e;
-    }
+    // try {
+    //   const contract = this.contract.connect(this.signer);
+
+    //   this.running = await contract.createProduct(name, category, description, image);
+    // } catch (e) {
+    //   this.exception('상품을 블록체인에 생성 중 문제가 발생했습니다.');
+    //   throw e;
+    // }
 
     this.done();
   }

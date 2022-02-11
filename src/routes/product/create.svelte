@@ -6,6 +6,7 @@
   import Button, { Label, Icon } from '@smui/button';
   import { user } from '../../store/user';
   import { product } from '../../store/product';
+  import GuideSubmittedProduct from '../../components/product/GuideSubmittedProduct.svelte';
 
   const { signer } = user;
   const { isLoading, error } = product;
@@ -28,6 +29,8 @@
 <svelte:head>
   <title>etherBay | 상품 등록</title>
 </svelte:head>
+
+<GuideSubmittedProduct />
 
 <form on:submit|preventDefault={handleSubmit}>
   <div class="columns margins">
