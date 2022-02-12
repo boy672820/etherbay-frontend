@@ -1,5 +1,5 @@
 import { variables } from '$lib/variables';
-import { type Contract, ethers } from 'ethers';
+import { type Contract, type EventFilter, ethers } from 'ethers';
 import type { JsonRpcSigner } from '@ethersproject/providers';
 import abi from '../abi/ProductOwnership.abi.json';
 import type { Product } from 'src/@types/product';
@@ -7,17 +7,23 @@ import type { signer } from 'src/@types/user';
 import { derived, writable, type Writable } from 'svelte/store';
 
 class ProductStore {
-  constructor(private readonly _isLoading: Writable<boolean> = writable(false)) {
+  constructor(
+    private readonly _isLoading: Writable<boolean> = writable(false),
+    private readonly _error: Writable<any> = writable(null),
+    private readonly _eventFilter: Writable<EventFilter | null> = writable(null)
+  ) {
     this.contract = new ethers.Contract(variables.productAddress, abi);
   }
 
   public signer: null | JsonRpcSigner = null;
-  public error: null | unknown = null;
   private contract: Contract;
-  private running: any;
 
   get isLoading() {
     return derived([this._isLoading], ([$isLoading]) => $isLoading);
+  }
+
+  get error() {
+    return derived([this._error], ([$error]) => $error);
   }
 
   private ready() {
@@ -29,11 +35,21 @@ class ProductStore {
   }
 
   private exception(error: string | Error | unknown) {
+    let _error;
     if (typeof error === 'string') {
-      this.error = new Error(error);
+      _error = new Error(error);
+      this._error.set(_error);
     } else {
-      this.error = error;
+      _error = error;
+      this._error.set(_error);
     }
+
+    return _error;
+  }
+
+  private contractFilter(contract: Contract, method: string, topics: Array<any>) {
+    const eventFilter = contract.filters[method](...topics);
+    this._eventFilter.set(eventFilter);
   }
 
   connect(signer: signer) {
@@ -48,38 +64,36 @@ class ProductStore {
     return this;
   }
 
-  async createProduct({ name, category, description, image }: Product) {
+  createProduct({ name, category, description, image }: Product): Contract {
     if (this.signer === null) {
       const error = new Error('디지털 지갑과 연결되지 않았습니다.');
-      this.exception(error);
-      throw error;
+      throw this.exception(error);
     }
 
     this.ready();
 
-    await new Promise((resolve) => setTimeout(resolve, 3000));
+    const contract = this.contract.connect(this.signer);
 
-    // try {
-    //   const contract = this.contract.connect(this.signer);
+    const params = [name, category, description, image];
 
-    //   this.running = await contract.createProduct(name, category, description, image);
-    // } catch (e) {
-    //   this.exception('상품을 블록체인에 생성 중 문제가 발생했습니다.');
-    //   throw e;
-    // }
+    contract
+      .createProduct(...params)
+      .then(() => this.done())
+      .catch(() => {
+        this.done();
+        throw this.exception('상품을 블록체인에 생성 중 문제가 발생했습니다.');
+      });
 
-    this.done();
+    // this.contractFilter(contract, 'createProduct', params);
+    return contract;
   }
 
-  async eventNewProduct() {
-    const receipt = await this.running.wait();
-    const events = receipt.events.filter((x) => {
-      return x.event == 'NewProduct';
-    });
-    const lastEvent = events.pop();
-    const product = lastEvent.args;
+  async subscribe(eventName: string) {
+    if (!this._eventFilter) {
+      throw this.exception('확인할 컨트랙트 요청 정보가 없습니다.');
+    }
 
-    return product;
+    console.log(this._eventFilter);
   }
 }
 

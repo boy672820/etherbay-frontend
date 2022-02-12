@@ -13,16 +13,17 @@
 
   let categories = ['IT/전자제품', '옷', '카메라', '소모품'];
 
-  let name = '',
-    description = '',
-    image = '',
+  let name = 'M1X Macbook pro 16inch, 2022',
+    description = 'M1X Macbook pro 16inch, 2022 64Gb 8TB\nFinal cut pro, Logic pro',
+    image =
+      'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp14-spacegray-select-202110_GEO_KR?wid=452&hei=420&fmt=jpeg&qlt=95&.v=1633657358000',
     category = categories[0];
 
   const handleSubmit = () => {
-    product
-      .connect($signer)
-      .createProduct({ name, category, description, image })
-      .catch((e) => console.log(e));
+    const contract = product.connect($signer).createProduct({ name, category, description, image });
+
+    const filters = contract.filters.NewProduct();
+    console.log(filters);
   };
 </script>
 

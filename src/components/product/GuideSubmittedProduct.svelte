@@ -2,8 +2,8 @@
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
   import Button, { Label } from '@smui/button';
 
+  export let open = false;
   export let isLoading = true;
-  export let open = true;
   export let data: any = null;
 </script>
 
@@ -16,7 +16,7 @@
   surface$style="width: 500px; max-width: calc(100vw - 32px);"
 >
   <Title id="mandatory-title">
-    {#if isLoading}상품 등록 중 ⛏️{/if}
+    {#if isLoading}상품 등록 중 🤖{/if}
     {#if data !== null}상품 등록 성공 🔥{/if}
   </Title>
   <Content id="mandatory-content">
@@ -52,8 +52,8 @@
     {/if}
   </Content>
   <Actions>
-    <Button on:click={() => (open = false)}>
-      <Label>닫기</Label>
+    <Button>
+      <Label>내 상품으로 이동</Label>
     </Button>
   </Actions>
 </Dialog>
