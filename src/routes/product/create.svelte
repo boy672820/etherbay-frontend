@@ -7,8 +7,10 @@
   import { user } from '../../store/user';
   import { product } from '../../store/product';
   import GuideSubmittedProduct from '../../components/product/GuideSubmittedProduct.svelte';
+  import { ethers } from 'ethers';
+  import abi from '../../abi/ProductOwnership.abi.json';
 
-  const { signer } = user;
+  const { signer, accountAddress } = user;
   const { isLoading, error } = product;
 
   let categories = ['IT/전자제품', '옷', '카메라', '소모품'];
@@ -19,11 +21,33 @@
       'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp14-spacegray-select-202110_GEO_KR?wid=452&hei=420&fmt=jpeg&qlt=95&.v=1633657358000',
     category = categories[0];
 
-  const handleSubmit = () => {
-    const contract = product.connect($signer).createProduct({ name, category, description, image });
+  // signer.subscribe(
+  //   (signer) =>
+  //     signer &&
+  //     product.connect(signer).subscribe(
+  //       'NewProduct',
+  //       (...args) => {
+  //         console.log('NewProduct', ...args);
+  //       },
+  //       [null, $accountAddress]
+  //     )
+  // );
 
-    const filters = contract.filters.NewProduct();
-    console.log(filters);
+  signer.subscribe((signer) => {
+    if (signer) {
+      const contract = new ethers.Contract(
+        '0x5FbDB2315678afecb367f032d93F642f64180aa3',
+        abi,
+        signer
+      );
+      contract.on('NewProduct', (...args) => {
+        console.log('NewProduct', ...args);
+      });
+    }
+  });
+
+  const handleSubmit = () => {
+    product.connect($signer).createProduct({ name, category, description, image });
   };
 </script>
 

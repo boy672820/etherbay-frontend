@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   // @smui
   import Button from '@smui/button';
   import TopAppBar, { AutoAdjust, TopAppBarComponentDev } from '@smui/top-app-bar';
@@ -7,10 +8,16 @@
   // layouts
   import Sidebar from '../components/layouts/Sidebar.svelte';
   import HeaderBar from '../components/layouts/HeaderBar.svelte';
+  // stores
+  import { user } from '../store/user';
 
   let topAppBar: TopAppBarComponentDev;
 
   let open = true;
+
+  onMount(() => {
+    user.loginMetamask();
+  });
 </script>
 
 <TopAppBar bind:this={topAppBar} variant="fixed">

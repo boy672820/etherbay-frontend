@@ -1,3 +1,4 @@
+import { ethers } from 'ethers';
 import type { accountAddress, isLogin, signer, UserState } from 'src/@types/user';
 import { type Writable, writable, derived } from 'svelte/store';
 
@@ -14,6 +15,20 @@ class UserStore {
     this._isLogin.set(true);
 
     console.log('User initialization complete: ', accountAddress);
+  }
+
+  async loginMetamask() {
+    if (typeof window === 'undefined') {
+      return false;
+    }
+
+    const provider = new ethers.providers.Web3Provider(window.ethereum);
+    await provider.send('eth_requestAccounts', []);
+
+    const signer = provider.getSigner();
+    const accountAddress = await signer.getAddress();
+
+    user.init({ accountAddress, signer });
   }
 
   async logout() {
