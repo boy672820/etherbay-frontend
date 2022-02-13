@@ -6,12 +6,12 @@
   import Button, { Label, Icon } from '@smui/button';
   import { user } from '../../store/user';
   import { product } from '../../store/product';
-  import GuideSubmittedProduct from '../../components/product/GuideSubmittedProduct.svelte';
-  import { ethers } from 'ethers';
-  import abi from '../../abi/ProductOwnership.abi.json';
+  import DialogSubmittedProduct from '../../components/product/DialogSubmittedProduct.svelte';
+  import DialogException from '../../components/DialogException.svelte';
+  import type { TransactionResponse } from '@ethersproject/providers';
 
-  const { signer, accountAddress } = user;
-  const { isLoading, error } = product;
+  const { signer } = user;
+  const { isLoading, error, receipt } = product;
 
   let categories = ['IT/전자제품', '옷', '카메라', '소모품'];
 
@@ -21,41 +21,16 @@
       'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp14-spacegray-select-202110_GEO_KR?wid=452&hei=420&fmt=jpeg&qlt=95&.v=1633657358000',
     category = categories[0];
 
-  // signer.subscribe(
-  //   (signer) =>
-  //     signer &&
-  //     product.connect(signer).subscribe(
-  //       'NewProduct',
-  //       (...args) => {
-  //         console.log('NewProduct', ...args);
-  //       },
-  //       [null, $accountAddress]
-  //     )
-  // );
-
-  signer.subscribe((signer) => {
-    if (signer) {
-      const contract = new ethers.Contract(
-        '0x5FbDB2315678afecb367f032d93F642f64180aa3',
-        abi,
-        signer
-      );
-      contract.on('NewProduct', (...args) => {
-        console.log('NewProduct', ...args);
-      });
-    }
-  });
-
   const handleSubmit = () => {
     product.connect($signer).createProduct({ name, category, description, image });
   };
+
+  $: console.log($receipt);
 </script>
 
 <svelte:head>
   <title>etherBay | 상품 등록</title>
 </svelte:head>
-
-<GuideSubmittedProduct />
 
 <form on:submit|preventDefault={handleSubmit}>
   <div class="columns margins">
@@ -112,6 +87,9 @@
     </div>
   </div>
 </form>
+
+<DialogSubmittedProduct />
+<DialogException open={!!$error} message={$error?.message} />
 
 <style>
   * :global(.shaped-outlined .mdc-notched-outline .mdc-notched-outline__leading) {

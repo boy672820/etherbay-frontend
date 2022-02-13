@@ -17,7 +17,7 @@ class UserStore {
     console.log('User initialization complete: ', accountAddress);
   }
 
-  async loginMetamask() {
+  async connectMetamask() {
     if (typeof window === 'undefined') {
       return false;
     }

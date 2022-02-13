@@ -6,7 +6,7 @@
   import Avatar from './Avatar.svelte';
   import Login from './Login.svelte';
   // config
-  import { routes } from '../../config/routes';
+  import { routes } from '$lib/routes';
   // store
   import { user } from '../../store/user';
 

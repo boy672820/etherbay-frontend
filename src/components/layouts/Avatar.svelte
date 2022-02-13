@@ -5,7 +5,7 @@
   import Menu, { MenuComponentDev } from '@smui/menu';
   import { Anchor } from '@smui/menu-surface';
   import List, { Item, Text, Graphic } from '@smui/list';
-  import { routes } from '../../config/routes';
+  import { routes } from '$lib/routes';
   // store
 
   let menu: MenuComponentDev;

@@ -16,7 +16,7 @@
   let open = true;
 
   onMount(() => {
-    user.loginMetamask();
+    user.connectMetamask();
   });
 </script>
 
