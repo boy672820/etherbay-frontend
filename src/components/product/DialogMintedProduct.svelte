@@ -1,10 +1,12 @@
 <script lang="ts">
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
   import Button, { Label } from '@smui/button';
+  import { routes } from '$lib/routes';
+  import { user } from '../../store/user';
+
+  const { accountAddress } = user;
 
   export let open = false;
-  export let isLoading = true;
-  export let data: any = null;
 </script>
 
 <Dialog
@@ -30,9 +32,11 @@
     </p>
   </Content>
   <Actions>
-    <Button>
-      <Label>내 상품으로 이동</Label>
-    </Button>
+    {#if $accountAddress}
+      <Button href={routes.product.my($accountAddress)}>
+        <Label>내 상품으로 이동</Label>
+      </Button>
+    {/if}
   </Actions>
 </Dialog>
 
