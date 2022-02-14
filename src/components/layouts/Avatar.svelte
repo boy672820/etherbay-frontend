@@ -7,6 +7,9 @@
   import List, { Item, Text, Graphic } from '@smui/list';
   import { routes } from '$lib/routes';
   // store
+  import { user } from '../../store/user';
+
+  const { accountAddress } = user;
 
   let menu: MenuComponentDev;
   let anchor: HTMLDivElement;
@@ -36,9 +39,18 @@
   <Menu bind:this={menu} anchor={false} bind:anchorElement={anchor} anchorCorner="BOTTOM_LEFT">
     <List dense>
       <Item>
-        <Graphic class="material-icons">card_giftcard</Graphic>
+        <Graphic class="material-icons">mode_edit</Graphic>
         <Text><Button href={routes.product.create}><Label>상품 등록하기</Label></Button></Text>
       </Item>
+      {#if $accountAddress}
+        <Item>
+          <Graphic class="material-icons">card_giftcard</Graphic>
+          <Text
+            ><Button href={routes.product.my($accountAddress)}><Label>내 상품</Label></Button
+            ></Text
+          >
+        </Item>
+      {/if}
     </List>
   </Menu>
 </div>

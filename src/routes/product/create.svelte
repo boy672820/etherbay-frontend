@@ -4,11 +4,13 @@
   import HelperText from '@smui/textfield/helper-text';
   import Chip, { Set, Text } from '@smui/chips';
   import Button, { Label, Icon } from '@smui/button';
+  // stores
   import { user } from '../../store/user';
   import { product } from '../../store/product';
-  import DialogSubmittedProduct from '../../components/product/DialogSubmittedProduct.svelte';
+  // components
   import DialogException from '../../components/DialogException.svelte';
-  import type { TransactionResponse } from '@ethersproject/providers';
+  import DialogMintingProduct from '../../components/product/DialogMintingProduct.svelte';
+  import DialogMintedProduct from '../../components/product/DialogMintedProduct.svelte';
 
   const { signer } = user;
   const { isLoading, error, receipt } = product;
@@ -24,8 +26,6 @@
   const handleSubmit = () => {
     product.connect($signer).createProduct({ name, category, description, image });
   };
-
-  $: console.log($receipt);
 </script>
 
 <svelte:head>
@@ -88,7 +88,8 @@
   </div>
 </form>
 
-<DialogSubmittedProduct />
+<DialogMintingProduct open={$isLoading} />
+<DialogMintedProduct open={!!$receipt} />
 <DialogException open={!!$error} message={$error?.message} />
 
 <style>

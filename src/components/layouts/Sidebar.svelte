@@ -4,17 +4,20 @@
   import List, { Item, Text } from '@smui/list';
   // modules
   import { page } from '$app/stores';
+  import { routes } from '$lib/routes';
+  // store
+  import { user } from '../../store/user';
+
+  const { accountAddress } = user;
 
   export let open = true;
 
-  const menu = [
-    { id: '/', name: '전체 상품' },
-    { id: '/my', name: '내 상품' }
-  ];
+  const menu = [{ path: routes.index, name: '전체 상품' }];
 
-  function setActive(value: string) {
-    active = value;
-  }
+  accountAddress.subscribe(
+    (accountAddress) =>
+      accountAddress && menu.push({ path: routes.product.my(accountAddress), name: '내 상품' })
+  );
 </script>
 
 <Drawer variant="dismissible" bind:open>
@@ -23,12 +26,8 @@
   </Header>
   <Content>
     <List>
-      {#each menu as { id, name }, i}
-        <Item
-          href="javascript:void(0)"
-          on:click={() => setActive(id)}
-          activated={$page.url.pathname === id}
-        >
+      {#each menu as { path, name }, i}
+        <Item href={path} activated={$page.url.pathname === path}>
           <Text>{name}</Text>
         </Item>
       {/each}
