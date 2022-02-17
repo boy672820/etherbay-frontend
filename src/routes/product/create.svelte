@@ -80,16 +80,18 @@
       </Set>
     </div>
     <div style="padding-top: 16px;">
-      <Button variant="raised" class="button-shaped-round">
+      <Button variant="raised" class="button-shaped-round" disabled={$isLoading}>
         <Icon class="material-icons">favorite</Icon>
-        <Label>상품 추가하기</Label>
+        <Label>
+          {#if $isLoading}상품 등록 중{:else}상품 추가하기{/if}
+        </Label>
       </Button>
     </div>
   </div>
 </form>
 
 <DialogMintingProduct open={$isLoading} />
-<DialogMintedProduct open={!!$receipt} />
+<DialogMintedProduct data={{ name, description, image, category }} />
 <DialogException open={!!$error} message={$error?.message} />
 
 <style>

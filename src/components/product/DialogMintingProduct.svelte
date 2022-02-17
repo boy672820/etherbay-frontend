@@ -2,6 +2,7 @@
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
   import Button, { Label } from '@smui/button';
   import { user } from '../../store/user';
+  import { routes } from '$lib/routes';
 
   const { accountAddress } = user;
 

@@ -1,12 +1,39 @@
 <script lang="ts">
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
-  import Button, { Label } from '@smui/button';
-  import { routes } from '$lib/routes';
+  import Button, { Label, Icon } from '@smui/button';
+  import Tooltip, { Wrapper } from '@smui/tooltip';
   import { user } from '../../store/user';
+  import { product } from '../../store/product';
+  import { goto } from '$app/navigation';
+  import { routes } from '$lib/routes';
+
+  export let data = {
+    name: '',
+    description: '',
+    image: '',
+    category: ''
+  };
 
   const { accountAddress } = user;
+  const { receipt } = product;
 
-  export let open = false;
+  let open: boolean = false,
+    txHash: string | null = null;
+
+  receipt.subscribe((receipt) => {
+    if (receipt) {
+      open = receipt !== null;
+      txHash = receipt?.transactionHash;
+    }
+  });
+
+  const handleClose = () => {
+    product.success();
+
+    if ($accountAddress) {
+      goto(routes.product.my($accountAddress));
+    }
+  };
 </script>
 
 <Dialog
@@ -19,21 +46,36 @@
 >
   <Title id="mandatory-title">상품 등록 성공 🔥</Title>
   <Content id="mandatory-content">
-    <h3 class="product-name">M1X Macbook pro 16inch, 2022</h3>
+    <h3 class="product-name">{data.name}</h3>
     <div class="product-image-container">
-      <img
-        src="https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp14-spacegray-select-202110_GEO_KR?wid=452&hei=420&fmt=jpeg&qlt=95&.v=1633657358000"
-        alt="macbook"
-        class="product-image"
-      />
+      <img src={data.image} alt={data.name} class="product-image" />
     </div>
     <p class="product-description">
-      M1X Macbook pro 16inch, 2022 64Gb 8TB<br />Final cut pro, Logic pro
+      {data.description}
     </p>
+    {#if txHash}
+      <p class="product-description">
+        <Wrapper>
+          <Button
+            color="secondary"
+            variant="outlined"
+            class="button-shaped-round"
+            href={`https://rinkeby.etherscan.io/tx/${txHash}`}
+            target="_blank"
+          >
+            <Label>
+              {txHash.substring(0, 7)}...{txHash.substring(txHash.length - 3, txHash.length)}
+            </Label>
+            <Icon class="material-icons">verified</Icon>
+          </Button>
+          <Tooltip xPos="center">Etherscan에서 확인하기</Tooltip>
+        </Wrapper>
+      </p>
+    {/if}
   </Content>
   <Actions>
     {#if $accountAddress}
-      <Button href={routes.product.my($accountAddress)}>
+      <Button on:click={handleClose}>
         <Label>내 상품으로 이동</Label>
       </Button>
     {/if}

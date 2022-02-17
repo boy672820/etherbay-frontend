@@ -56,6 +56,12 @@ class ProductStore {
     return _error;
   }
 
+  success() {
+    this._isLoading.set(false);
+    this._error.set(null);
+    this._receipt.set(null);
+  }
+
   connect(signer: signer): ProductStore {
     if (signer === null) {
       throw this.exception('디지털 지갑과 연결되지 않았습니다.');
