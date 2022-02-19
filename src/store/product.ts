@@ -3,12 +3,14 @@ import { variables } from '$lib/variables';
 import { getJsonRpcProvider } from '$lib/provider';
 import type { Product } from 'src/@types/product';
 import type { signer } from 'src/@types/user';
+// libraries
 import { type Contract, ethers } from 'ethers';
 import type {
   JsonRpcSigner,
   TransactionReceipt,
   TransactionResponse
 } from '@ethersproject/providers';
+// abi
 import abi from '../abi/ProductOwnership.abi.json';
 
 class ProductStore {

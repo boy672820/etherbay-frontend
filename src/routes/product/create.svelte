@@ -13,7 +13,7 @@
   import DialogMintedProduct from '../../components/product/DialogMintedProduct.svelte';
 
   const { signer } = user;
-  const { isLoading, error, receipt } = product;
+  const { isLoading, error } = product;
 
   let categories = ['IT/전자제품', '옷', '카메라', '소모품'];
 
