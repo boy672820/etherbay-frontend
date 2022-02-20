@@ -15,8 +15,12 @@
 
   let open = true;
 
-  onMount(() => {
-    user.connectMetamask();
+  onMount(async () => {
+    await user.connectMetamask();
+
+    setTimeout(() => {
+      user.personalSign('Hello etherBay!');
+    }, 2000);
   });
 </script>
 

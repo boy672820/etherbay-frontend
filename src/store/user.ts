@@ -6,8 +6,20 @@ class UserStore {
   constructor(
     private _isLogin: Writable<isLogin> = writable(false),
     private _accountAddress: Writable<accountAddress | null> = writable(null),
-    private _signer: Writable<signer> = writable(null)
+    private _signer: Writable<signer | null> = writable(null)
   ) {}
+
+  get isLogin() {
+    return derived([this._isLogin], ([$isLogin]) => $isLogin);
+  }
+
+  get accountAddress() {
+    return derived([this._accountAddress], ([$accountAddress]) => $accountAddress);
+  }
+
+  get signer() {
+    return derived([this._signer], ([$signer]) => $signer);
+  }
 
   async init({ accountAddress, signer }: UserState) {
     this._accountAddress.set(accountAddress);
@@ -37,16 +49,17 @@ class UserStore {
     this._isLogin.set(false);
   }
 
-  get isLogin() {
-    return derived([this._isLogin], ([$isLogin]) => $isLogin);
-  }
+  async personalSign(message: string) {
+    this.signer.subscribe(async (signer) => {
+      if (!(signer instanceof ethers.providers.JsonRpcSigner)) {
+        throw new Error('메타마스크 로그인 후 이용해주세요.');
+      }
 
-  get accountAddress() {
-    return derived([this._accountAddress], ([$accountAddress]) => $accountAddress);
-  }
+      const bytesMessage = '0x' + ethers.utils.id(message);
+      const signature = await signer.signMessage(bytesMessage);
 
-  get signer() {
-    return derived([this._signer], ([$signer]) => $signer);
+      console.log(signature);
+    });
   }
 }
 
