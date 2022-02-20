@@ -41,11 +41,13 @@
     </a>
   </Section>
   <Section align="end" toolbar>
-    {#if $isLogin}
-      <Avatar />
-    {:else}
-      <Login />
-    {/if}
+    {#key $isLogin}
+      {#if $isLogin}
+        <Avatar />
+      {:else}
+        <Login />
+      {/if}
+    {/key}
 
     <IconButton on:click={switchTheme}>
       <Icon class="material-icons">{lightTheme ? 'mode_night' : 'wb_sunny'}</Icon>

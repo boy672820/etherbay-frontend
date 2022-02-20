@@ -11,17 +11,30 @@
   // stores
   import { user } from '../store/user';
 
+  const { error } = user;
+
   let topAppBar: TopAppBarComponentDev;
 
   let open = true;
 
   onMount(async () => {
-    await user.connectMetamask();
+    const provider = await user.connectMetamask();
 
-    setTimeout(() => {
-      user.personalSign('Hello etherBay!');
-    }, 2000);
+    if (provider) {
+      const { accountAddress } = provider;
+
+      const nonce = await user.getNonce(accountAddress);
+      const signature = await user.personalSign(nonce);
+
+      const data = {
+        username: accountAddress,
+        password: signature
+      };
+      await user.signIn(data);
+    }
   });
+
+  $: console.log($error);
 </script>
 
 <TopAppBar bind:this={topAppBar} variant="fixed">

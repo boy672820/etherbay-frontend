@@ -8,3 +8,13 @@ export type UserState = {
   signer: signer;
   accountAddress: accountAddress;
 };
+
+export type LocalSign = {
+  username: string;
+  password: string;
+};
+
+export interface ConnectedMetamask {
+  signer: signer;
+  accountAddress: accountAddress;
+}

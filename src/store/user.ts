@@ -1,12 +1,22 @@
+import axios from '$lib/axios';
 import { ethers } from 'ethers';
-import type { accountAddress, isLogin, signer, UserState } from 'src/@types/user';
+import type {
+  accountAddress,
+  ConnectedMetamask,
+  isLogin,
+  LocalSign,
+  signer,
+  UserState
+} from 'src/@types/user';
 import { type Writable, writable, derived } from 'svelte/store';
 
 class UserStore {
   constructor(
     private _isLogin: Writable<isLogin> = writable(false),
     private _accountAddress: Writable<accountAddress | null> = writable(null),
-    private _signer: Writable<signer | null> = writable(null)
+    private _signer: Writable<signer | null> = writable(null),
+    private readonly _isLoading: Writable<boolean> = writable(false),
+    private readonly _error: Writable<any> = writable(null)
   ) {}
 
   get isLogin() {
@@ -21,6 +31,10 @@ class UserStore {
     return derived([this._signer], ([$signer]) => $signer);
   }
 
+  get error() {
+    return derived([this._error], ([$error]) => $error);
+  }
+
   async init({ accountAddress, signer }: UserState) {
     this._accountAddress.set(accountAddress);
     this._signer.set(signer);
@@ -29,9 +43,9 @@ class UserStore {
     console.log('User initialization complete: ', accountAddress);
   }
 
-  async connectMetamask() {
+  async connectMetamask(): Promise<ConnectedMetamask | null> {
     if (typeof window === 'undefined') {
-      return false;
+      return null;
     }
 
     const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -41,25 +55,53 @@ class UserStore {
     const accountAddress = await signer.getAddress();
 
     user.init({ accountAddress, signer });
+
+    return { signer, accountAddress };
   }
 
-  async logout() {
+  logout() {
     this._accountAddress.set(null);
     this._signer.set(null);
     this._isLogin.set(false);
   }
 
-  async personalSign(message: string) {
-    this.signer.subscribe(async (signer) => {
-      if (!(signer instanceof ethers.providers.JsonRpcSigner)) {
-        throw new Error('메타마스크 로그인 후 이용해주세요.');
-      }
-
-      const bytesMessage = '0x' + ethers.utils.id(message);
-      const signature = await signer.signMessage(bytesMessage);
-
-      console.log(signature);
+  personalSign(message: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.signer.subscribe(async (signer) => {
+        if (signer) {
+          try {
+            const signature = await signer.signMessage(message);
+            resolve(signature);
+          } catch (e) {
+            this._error.set(e);
+            reject('서명에 실패했습니다.');
+          }
+        }
+      });
     });
+  }
+
+  async getNonce(accountAddress: string) {
+    try {
+      const data = { accountAddress };
+      const response: { data: any } = await axios.post('/auth/nonce', data);
+
+      return response.data;
+    } catch (e) {
+      this._error.set(e);
+      throw new Error('넌스코드 조회에 실패했습니다.');
+    }
+  }
+
+  async signIn(data: LocalSign) {
+    try {
+      const response: { data: any } = await axios.post('/auth', data);
+
+      return response.data;
+    } catch (e) {
+      this._error.set(e);
+      throw new Error('로그인에 실패했습니다.');
+    }
   }
 }
 
