@@ -10,6 +10,7 @@
   import HeaderBar from '../components/layouts/HeaderBar.svelte';
   // stores
   import { user } from '../store/user';
+  import axiosInstance from '$lib/axios';
 
   const { error } = user;
 
@@ -18,6 +19,10 @@
   let open = true;
 
   onMount(async () => {
+    if (axiosInstance.defaults.headers.Authorization) {
+      return;
+    }
+
     const provider = await user.connectMetamask();
 
     if (provider) {
@@ -30,7 +35,9 @@
         username: accountAddress,
         password: signature
       };
-      await user.signIn(data);
+      const jwt = await user.signIn(data);
+
+      axiosInstance.defaults.headers.Authorization = `Bearer ${jwt}`;
     }
   });
 
