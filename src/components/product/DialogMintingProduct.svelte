@@ -1,12 +1,14 @@
 <script lang="ts">
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
   import Button, { Label } from '@smui/button';
-  import { user } from '../../store/user';
   import { routes } from '$lib/routes';
+  import { user } from '../../store/user';
+  import { product } from '../../store/product';
 
+  const { isLoading } = product;
   const { accountAddress } = user;
 
-  export let open = false;
+  let open = $isLoading;
 </script>
 
 <Dialog

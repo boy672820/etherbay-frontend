@@ -14,8 +14,10 @@
   import DialogException from '../../components/DialogException.svelte';
   import DialogMintingProduct from '../../components/product/DialogMintingProduct.svelte';
   import DialogMintedProduct from '../../components/product/DialogMintedProduct.svelte';
+  // libraries
+  import * as Yup from 'yup';
 
-  const { signer, isAuth } = user;
+  const { isAuth } = user;
   const { isLoading, error } = product;
 
   // 인증 정보가 없을 경우, 비인증 안내 페이지로 이동
@@ -25,13 +27,34 @@
 
   let categories = ['IT/전자제품', '옷', '카메라', '소모품'];
 
-  let name = 'M1X Macbook pro 16inch, 2022',
-    description = 'M1X Macbook pro 16inch, 2022 64Gb 8TB\nFinal cut pro, Logic pro',
+  let name: string = '',
+    description: string = '',
     image: FileList | null = null,
-    category = categories[0];
+    category: string = categories[0];
 
-  const handleSubmit = () => {
-    product.connect($signer).createProduct({ name, category, description, image });
+  const schema = Yup.object().shape({
+    name: Yup.string().required('상품명을 입력해주세요.'),
+    description: Yup.string().required('상품 설명을 입력해주세요.'),
+    image: Yup.mixed().required('상품 이미지를 선택해주세요.'),
+    category: Yup.string().required('카테고리를 선택해주세요.')
+  });
+
+  const handleSubmit = async () => {
+    if (!image) {
+      return;
+    }
+
+    const data = { name, description, image, category };
+
+    try {
+      await schema.validate(data, { abortEarly: false });
+    } catch (e: any) {
+      const errors = e.inner.reduce((acc: any, err: any) => ({ ...acc, [err.path]: err.message }));
+
+      alert(errors.message);
+    }
+
+    product.createProduct(data);
   };
 </script>
 
@@ -49,6 +72,7 @@
         </Chip>
       </Set>
     </div>
+
     <div style="padding-top: 16px;">
       <Textfield
         class="shaped-outlined"
@@ -61,6 +85,7 @@
         <HelperText slot="helper">상품명은 필수 입니다.</HelperText>
       </Textfield>
     </div>
+
     <div>
       <Textfield
         class="shaped-outlined"
@@ -74,6 +99,7 @@
         <HelperText slot="helper">상품 설명은 필수 입니다.</HelperText>
       </Textfield>
     </div>
+
     <div class="hide-file-ui">
       <Textfield
         type="file"
@@ -97,8 +123,8 @@
   </div>
 </form>
 
-<DialogMintingProduct open={$isLoading} />
-<DialogMintedProduct data={{ name, description, image, category }} />
+<DialogMintingProduct />
+<DialogMintedProduct />
 <DialogException open={!!$error} message={$error?.message} />
 
 <style>

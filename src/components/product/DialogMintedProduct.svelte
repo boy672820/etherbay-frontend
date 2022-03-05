@@ -7,29 +7,13 @@
   import { goto } from '$app/navigation';
   import { routes } from '$lib/routes';
 
-  export let data = {
-    name: '',
-    description: '',
-    image: '',
-    category: ''
-  };
-
   const { accountAddress } = user;
-  const { receipt } = product;
+  const { data } = product;
 
   let open: boolean = false,
     txHash: string | null = null;
 
-  receipt.subscribe((receipt) => {
-    if (receipt) {
-      open = receipt !== null;
-      txHash = receipt?.transactionHash;
-    }
-  });
-
   const handleClose = () => {
-    product.success();
-
     if ($accountAddress) {
       goto(routes.product.my($accountAddress));
     }
@@ -46,12 +30,12 @@
 >
   <Title id="mandatory-title">상품 등록 성공 🔥</Title>
   <Content id="mandatory-content">
-    <h3 class="product-name">{data.name}</h3>
+    <h3 class="product-name">{$data.name}</h3>
     <div class="product-image-container">
-      <img src={data.image} alt={data.name} class="product-image" />
+      <img src={$data.image} alt={$data.name} class="product-image" />
     </div>
     <p class="product-description">
-      {data.description}
+      {$data.description}
     </p>
     {#if txHash}
       <p class="product-description">

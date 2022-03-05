@@ -1,5 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
+  import { session } from '$app/stores';
+  import axios from '$lib/axios';
   // @smui
   import Button from '@smui/button';
   import TopAppBar, { AutoAdjust, TopAppBarComponentDev } from '@smui/top-app-bar';
@@ -10,16 +12,14 @@
   import HeaderBar from '../components/layouts/HeaderBar.svelte';
   // stores
   import { user } from '../store/user';
-  import axiosInstance from '$lib/axios';
-
-  const { error } = user;
 
   let topAppBar: TopAppBarComponentDev;
 
   let open = true;
 
   onMount(async () => {
-    if (axiosInstance.defaults.headers.Authorization) {
+    if ($session?.accessToken) {
+      axios.defaults.headers.common.Authorization = `Bearer ${$session.accessToken}`;
       return;
     }
 
@@ -37,11 +37,11 @@
       };
       const jwt = await user.signIn(data);
 
-      axiosInstance.defaults.headers.Authorization = `Bearer ${jwt}`;
+      $session.accessToken = jwt;
+
+      axios.defaults.headers.Authorization = `Bearer ${jwt}`;
     }
   });
-
-  $: console.log($error);
 </script>
 
 <TopAppBar bind:this={topAppBar} variant="fixed">

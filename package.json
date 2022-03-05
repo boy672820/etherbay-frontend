@@ -48,6 +48,7 @@
   "type": "module",
   "dependencies": {
     "axios": "^0.26.0",
-    "ethers": "^5.5.4"
+    "ethers": "^5.5.4",
+    "yup": "^0.32.11"
   }
 }
