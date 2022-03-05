@@ -1,4 +1,7 @@
 <script lang="ts">
+  import { browser } from '$app/env';
+  import { goto } from '$app/navigation';
+  import { routes } from '$lib/routes';
   // @smui
   import Textfield from '@smui/textfield';
   import HelperText from '@smui/textfield/helper-text';
@@ -12,15 +15,19 @@
   import DialogMintingProduct from '../../components/product/DialogMintingProduct.svelte';
   import DialogMintedProduct from '../../components/product/DialogMintedProduct.svelte';
 
-  const { signer } = user;
+  const { signer, isAuth } = user;
   const { isLoading, error } = product;
+
+  // 인증 정보가 없을 경우, 비인증 안내 페이지로 이동
+  $: if (browser && !$isAuth) {
+    goto(routes.unauthorized);
+  }
 
   let categories = ['IT/전자제품', '옷', '카메라', '소모품'];
 
   let name = 'M1X Macbook pro 16inch, 2022',
     description = 'M1X Macbook pro 16inch, 2022 64Gb 8TB\nFinal cut pro, Logic pro',
-    image =
-      'https://store.storeimages.cdn-apple.com/8756/as-images.apple.com/is/mbp14-spacegray-select-202110_GEO_KR?wid=452&hei=420&fmt=jpeg&qlt=95&.v=1633657358000',
+    image: FileList | null = null,
     category = categories[0];
 
   const handleSubmit = () => {
@@ -35,6 +42,14 @@
 <form on:submit|preventDefault={handleSubmit}>
   <div class="columns margins">
     <div>
+      <div>카테고리 선택*</div>
+      <Set chips={categories} let:chip choice bind:selected={category}>
+        <Chip {chip}>
+          <Text>{chip}</Text>
+        </Chip>
+      </Set>
+    </div>
+    <div style="padding-top: 16px;">
       <Textfield
         class="shaped-outlined"
         style="width: 100%;"
@@ -59,26 +74,18 @@
         <HelperText slot="helper">상품 설명은 필수 입니다.</HelperText>
       </Textfield>
     </div>
-    <div>
+    <div class="hide-file-ui">
       <Textfield
+        type="file"
         class="shaped-outlined"
         style="width: 100%;"
         variant="outlined"
-        bind:value={image}
+        bind:files={image}
         label="이미지"
         required
-      >
-        <HelperText slot="helper">이미지 링크를 올려주세요.</HelperText>
-      </Textfield>
+      />
     </div>
-    <div>
-      <div>카테고리 선택*</div>
-      <Set chips={categories} let:chip choice bind:selected={category}>
-        <Chip {chip}>
-          <Text>{chip}</Text>
-        </Chip>
-      </Set>
-    </div>
+
     <div style="padding-top: 16px;">
       <Button variant="raised" class="button-shaped-round" disabled={$isLoading}>
         <Icon class="material-icons">favorite</Icon>
@@ -113,5 +120,12 @@
   * :global(.shaped-outlined + .mdc-text-field-helper-line) {
     padding-left: 32px;
     padding-right: 28px;
+  }
+
+  .hide-file-ui :global(input[type='file']::file-selector-button) {
+    display: none;
+  }
+  .hide-file-ui :global(:not(.mdc-text-field--label-floating) input[type='file']) {
+    color: transparent;
   }
 </style>

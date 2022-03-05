@@ -64,7 +64,7 @@ class ProductStore {
     this._receipt.set(null);
   }
 
-  connect(signer: signer): ProductStore {
+  connect(signer: signer | null): ProductStore {
     if (signer === null) {
       throw this.exception('디지털 지갑과 연결되지 않았습니다.');
     }

@@ -13,14 +13,18 @@ import { type Writable, writable, derived } from 'svelte/store';
 class UserStore {
   constructor(
     private _isLogin: Writable<isLogin> = writable(false),
+    private _isAuth: Writable<isLogin> = writable(false),
     private _accountAddress: Writable<accountAddress | null> = writable(null),
     private _signer: Writable<signer | null> = writable(null),
-    private readonly _isLoading: Writable<boolean> = writable(false),
     private readonly _error: Writable<any> = writable(null)
   ) {}
 
   get isLogin() {
     return derived([this._isLogin], ([$isLogin]) => $isLogin);
+  }
+
+  get isAuth() {
+    return derived([this._isAuth], ([$isAuth]) => $isAuth);
   }
 
   get accountAddress() {
@@ -35,7 +39,7 @@ class UserStore {
     return derived([this._error], ([$error]) => $error);
   }
 
-  async init({ accountAddress, signer }: UserState) {
+  private init({ accountAddress, signer }: UserState) {
     this._accountAddress.set(accountAddress);
     this._signer.set(signer);
     this._isLogin.set(true);
@@ -96,6 +100,8 @@ class UserStore {
   async signIn(data: LocalSign) {
     try {
       const response: { data: any } = await axios.post('/auth', data);
+
+      this._isAuth.set(true);
 
       return response.data;
     } catch (e) {

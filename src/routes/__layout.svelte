@@ -66,6 +66,7 @@
   /* These classes are only needed because the
     drawer is in a container on the page. */
   .drawer-container {
+    height: calc(100vh - 64px);
     position: relative;
     display: flex;
     border: 1px solid var(--mdc-theme-text-hint-on-background, rgba(0, 0, 0, 0.1));
