@@ -9,7 +9,7 @@
   import Button, { Label, Icon } from '@smui/button';
   // stores
   import { user } from '../../store/user';
-  import { product } from '../../store/product';
+  import { productStore } from '../../store/product';
   // components
   import DialogException from '../../components/DialogException.svelte';
   import DialogMintingProduct from '../../components/product/DialogMintingProduct.svelte';
@@ -17,8 +17,8 @@
   // libraries
   import * as Yup from 'yup';
 
-  const { isAuth } = user;
-  const { isLoading, error } = product;
+  const { isAuth, accountAddress } = user;
+  const { isLoading, error, product } = productStore;
 
   // 인증 정보가 없을 경우, 비인증 안내 페이지로 이동
   $: if (browser && !$isAuth) {
@@ -44,7 +44,7 @@
       return;
     }
 
-    const data = { name, description, image, category };
+    const data = { name, description, image: image[0], category };
 
     try {
       await schema.validate(data, { abortEarly: false });
@@ -54,7 +54,7 @@
       alert(errors.message);
     }
 
-    product.createProduct(data);
+    productStore.createProduct(data);
   };
 </script>
 
@@ -123,8 +123,8 @@
   </div>
 </form>
 
-<DialogMintingProduct />
-<DialogMintedProduct />
+<DialogMintingProduct open={$isLoading} accountAddress={$accountAddress} />
+<DialogMintedProduct open={!!$product} data={$product} accountAddress={$accountAddress} />
 <DialogException open={!!$error} message={$error?.message} />
 
 <style>

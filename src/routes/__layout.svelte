@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from 'svelte';
-  import { session } from '$app/stores';
   import axios from '$lib/axios';
   // @smui
   import Button from '@smui/button';
@@ -18,28 +17,26 @@
   let open = true;
 
   onMount(async () => {
-    if ($session?.accessToken) {
-      axios.defaults.headers.common.Authorization = `Bearer ${$session.accessToken}`;
-      return;
-    }
-
     const provider = await user.connectMetamask();
+    const isAuth = user.setAuth();
 
-    if (provider) {
-      const { accountAddress } = provider;
+    if (!isAuth) {
 
-      const nonce = await user.getNonce(accountAddress);
-      const signature = await user.personalSign(nonce);
+      if (provider) {
+        const { accountAddress } = provider;
 
-      const data = {
-        username: accountAddress,
-        password: signature
-      };
-      const jwt = await user.signIn(data);
+        const nonce = await user.getNonce(accountAddress);
+        const signature = await user.personalSign(nonce);
 
-      $session.accessToken = jwt;
+        const data = {
+          username: accountAddress,
+          password: signature
+        };
+        const jwt = await user.signIn(data);
 
-      axios.defaults.headers.Authorization = `Bearer ${jwt}`;
+        window.localStorage.setItem('accessToken', jwt);
+        axios.defaults.headers.Authorization = `Bearer ${jwt}`;
+      }
     }
   });
 </script>

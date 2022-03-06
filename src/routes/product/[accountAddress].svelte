@@ -1,12 +1,23 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   // @smui
   import LayoutGrid, { Cell } from '@smui/layout-grid';
   // components
   import Product from '../../components/product/Product.svelte';
   // store
   import { user } from '../../store/user';
+  import { productStore } from '../../store/product';
 
-  const { accountAddress } = user;
+  const { signer, accountAddress } = user;
+  const { isLoading, products } = productStore;
+
+  $: {
+    if ($signer && $accountAddress) {
+      productStore.connect($signer).getProducts($accountAddress);
+    }
+  }
+
+  $: console.log($products);
 </script>
 
 <svelte:head>
@@ -14,9 +25,7 @@
 </svelte:head>
 
 <LayoutGrid>
-  {#each Array(10) as _unused, i}
-    <Cell span={3}>
-      <Product />
-    </Cell>
-  {/each}
+  <Cell span={3}>
+    <Product />
+  </Cell>
 </LayoutGrid>

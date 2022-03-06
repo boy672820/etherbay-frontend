@@ -1,3 +1,4 @@
+import { browser } from '$app/env';
 import axios from '$lib/axios';
 import { ethers } from 'ethers';
 import type {
@@ -48,7 +49,7 @@ class UserStore {
   }
 
   async connectMetamask(): Promise<ConnectedMetamask | null> {
-    if (typeof window === 'undefined') {
+    if (!browser) {
       return null;
     }
 
@@ -83,6 +84,23 @@ class UserStore {
         }
       });
     });
+  }
+
+  setAuth() {
+    if (!browser) {
+      throw new Error('Window 객체를 찾을 수 없음');
+    }
+
+    const accessToken = window.localStorage.getItem('accessToken');
+
+    if (!accessToken) {
+      return false;
+    }
+
+    this._isAuth.set(true);
+    axios.defaults.headers.Authorization = `Bearer ${accessToken}`;
+
+    return true;
   }
 
   async getNonce(accountAddress: string) {

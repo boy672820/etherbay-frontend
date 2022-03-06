@@ -2,13 +2,9 @@
   import Dialog, { Title, Content, Actions } from '@smui/dialog';
   import Button, { Label } from '@smui/button';
   import { routes } from '$lib/routes';
-  import { user } from '../../store/user';
-  import { product } from '../../store/product';
 
-  const { isLoading } = product;
-  const { accountAddress } = user;
-
-  let open = $isLoading;
+  export let open: boolean = false,
+    accountAddress: string | null = null;
 </script>
 
 <Dialog
@@ -37,8 +33,8 @@
     </div>
   </Content>
   <Actions>
-    {#if $accountAddress}
-      <Button href={routes.product.my($accountAddress)}>
+    {#if accountAddress}
+      <Button href={routes.product.my(accountAddress)}>
         <Label>내 상품으로 이동</Label>
       </Button>
     {/if}
