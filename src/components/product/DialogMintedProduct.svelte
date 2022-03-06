@@ -8,9 +8,12 @@
 
   export let open: boolean = false,
     accountAddress: string | null = null,
-    data: MintedProduct | null = null;
+    data: MintedProduct | null = null,
+    handleClose = () => {};
 
-  const handleClose = () => {
+  const handleGoto = () => {
+    handleClose();
+
     if (accountAddress) {
       goto(routes.product.my(accountAddress));
     }
@@ -59,6 +62,9 @@
     <Actions>
       {#if accountAddress}
         <Button on:click={handleClose}>
+          <Label>확인</Label>
+        </Button>
+        <Button on:click={handleGoto}>
           <Label>내 상품으로 이동</Label>
         </Button>
       {/if}

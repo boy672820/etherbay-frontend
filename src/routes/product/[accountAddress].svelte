@@ -7,6 +7,7 @@
   // store
   import { user } from '../../store/user';
   import { productStore } from '../../store/product';
+  import DialogLoading from '../../components/DialogLoading.svelte';
 
   const { signer, accountAddress } = user;
   const { isLoading, products } = productStore;
@@ -16,8 +17,6 @@
       productStore.connect($signer).getProducts($accountAddress);
     }
   }
-
-  $: console.log($products);
 </script>
 
 <svelte:head>
@@ -26,6 +25,17 @@
 
 <LayoutGrid>
   <Cell span={3}>
-    <Product />
+    {#if $products}
+      {#each $products as data}
+        <Product
+          name={data.name}
+          description={data.description}
+          image={data.image}
+          category={data.attributes[0].value}
+        />
+      {/each}
+    {/if}
   </Cell>
 </LayoutGrid>
+
+<DialogLoading open={$isLoading} />

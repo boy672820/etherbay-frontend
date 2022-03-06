@@ -1,28 +1,25 @@
 <script lang="ts">
-  import Card, {
-    Content,
-    PrimaryAction,
-    Media,
-    Actions,
-    ActionButtons,
-    ActionIcons
-  } from '@smui/card';
-  import Button, { Label } from '@smui/button';
-  import IconButton, { Icon } from '@smui/icon-button';
+  import Card, { Content, PrimaryAction, Media } from '@smui/card';
+
+  export let name = 'MacBook-pro M1X 16inch';
+  export let description = 'MacBook-pro M1X 16inch';
+  export let image = 'https://place-hold.it/320x180?text=16x9&fontsize=23';
+  export let category = '전자제품/IT';
+
+  $: console.log(image);
 </script>
 
 <div class="card-container">
   <Card>
     <PrimaryAction>
-      <Media class="card-media-16x9" aspectRatio="16x9" />
+      <Media class="card-media-16x9" aspectRatio="16x9" style={`background-image: url(${image})`} />
       <Content class="mdc-typography--body2">
-        <h2 class="mdc-typography--headline6" style="margin: 0;">MacBook-pro M1X 16inch</h2>
+        <h2 class="mdc-typography--headline6" style="margin: 0;">{name}</h2>
         <p style="margin-top: 0;">
-          MacBook-pro M1X 16inch, Space Gray, 64GB Memory, 8TB SSD Storage, Pre-Installed "Final Cut
-          Pro" and "Logic Pro"
+          {description}
         </p>
-        <h3 class="mdc-typography--subtitle2"   style="margin: 0 0 10px; color: #999;">
-          7,980,000원
+        <h3 class="mdc-typography--subtitle2" style="margin: 0 0 10px; color: #999;">
+          {category}
         </h3>
       </Content>
     </PrimaryAction>
@@ -30,7 +27,4 @@
 </div>
 
 <style>
-  * :global(.card-media-16x9) {
-    background-image: url(https://place-hold.it/320x180?text=16x9&fontsize=23);
-  }
 </style>

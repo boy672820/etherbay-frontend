@@ -56,6 +56,10 @@
 
     productStore.createProduct(data);
   };
+
+  const handleClose = () => {
+    productStore.initProduct();
+  };
 </script>
 
 <svelte:head>
@@ -124,7 +128,12 @@
 </form>
 
 <DialogMintingProduct open={$isLoading} accountAddress={$accountAddress} />
-<DialogMintedProduct open={!!$product} data={$product} accountAddress={$accountAddress} />
+<DialogMintedProduct
+  open={!!$product}
+  data={$product}
+  accountAddress={$accountAddress}
+  {handleClose}
+/>
 <DialogException open={!!$error} message={$error?.message} />
 
 <style>

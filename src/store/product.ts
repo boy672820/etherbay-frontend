@@ -72,6 +72,10 @@ class ProductStore {
     }
   }
 
+  async initProduct() {
+    this._product.set(null);
+  }
+
   async getProducts(accountAddress: string) {
     this.ready();
 
@@ -106,7 +110,8 @@ class ProductStore {
 
     const productReduceInit: Array<any> = [];
     const productPromises = tokenUris.reduce((result, uri) => {
-      const promise = axios.get(uri);
+      const ipfsHash = uri.substring(21);
+      const promise = this.getIpfs(ipfsHash);
 
       result.push(promise);
 
@@ -119,6 +124,19 @@ class ProductStore {
     this.done();
 
     return tokenIds;
+  }
+
+  async getIpfs(ipfsHash: string) {
+    try {
+      const response: { data: any } = await axios.get(`/pinata/ipfs/${ipfsHash}`);
+
+      return response.data;
+    } catch (e) {
+      this._error.set(e);
+      this.done();
+
+      throw new Error('IPFS 정보를 가져오는 중 문제가 발생했습니다.');
+    }
   }
 }
 
