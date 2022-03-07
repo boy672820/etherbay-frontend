@@ -1,6 +1,7 @@
 <script lang="ts">
   import CircularProgress from '@smui/circular-progress';
-  import Dialog, { Title, Content } from '@smui/dialog';
+  import Dialog, { Title, Content, Actions } from '@smui/dialog';
+  import Button, { Label } from '@smui/button';
 
   export let open = false;
 </script>
@@ -19,4 +20,9 @@
       <CircularProgress style="height: 32px; width: 32px;" indeterminate />
     </div>
   </Content>
+  <Actions>
+    <Button disabled>
+      <Label>닫기</Label>
+    </Button>
+  </Actions>
 </Dialog>

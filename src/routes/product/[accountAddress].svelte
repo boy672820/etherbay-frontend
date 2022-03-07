@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
+  import { page } from '$app/stores';
   // @smui
   import LayoutGrid, { Cell } from '@smui/layout-grid';
   // components
@@ -9,18 +9,20 @@
   import { productStore } from '../../store/product';
   import DialogLoading from '../../components/DialogLoading.svelte';
 
-  const { signer, accountAddress } = user;
+  const { signer } = user;
   const { isLoading, products } = productStore;
 
   $: {
-    if ($signer && $accountAddress) {
-      productStore.connect($signer).getProducts($accountAddress);
+    if ($signer && $page.params.accountAddress) {
+      productStore.connect($signer).getProducts($page.params.accountAddress);
     }
   }
+
+  $: console.log($products);
 </script>
 
 <svelte:head>
-  <title>etherBay | 내 상품({$accountAddress})</title>
+  <title>etherBay | 내 상품({$page.params.accountAddress})</title>
 </svelte:head>
 
 <LayoutGrid>

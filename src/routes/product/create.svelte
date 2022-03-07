@@ -60,6 +60,8 @@
   const handleClose = () => {
     productStore.initProduct();
   };
+
+  $: console.log($error);
 </script>
 
 <svelte:head>

@@ -79,51 +79,60 @@ class ProductStore {
   async getProducts(accountAddress: string) {
     this.ready();
 
-    const bigNumber = await this.contract.balanceOf(accountAddress);
+    try {
+      const bigNumber = await this.contract.balanceOf(accountAddress);
 
-    // Token ID 가져오기
+      // Token ID 가져오기
 
-    const balance = bigNumber.toNumber();
-    const indexPromises: Array<Promise<any>> = [];
+      const balance = bigNumber.toNumber();
+      const indexPromises: Array<Promise<any>> = [];
 
-    for (let i = 0; balance > i; i += 1) {
-      const promise = this.contract.tokenOfOwnerByIndex(accountAddress, i);
-      indexPromises.push(promise);
+      for (let i = 0; balance > i; i += 1) {
+        const promise = this.contract.tokenOfOwnerByIndex(accountAddress, i);
+        indexPromises.push(promise);
+      }
+
+      const tokenIds = await Promise.all(indexPromises);
+
+      // Token URI 가져오기
+
+      const uriReduceInit: Array<string> = [];
+      const uriPromises = tokenIds.reduce((result, tokenId) => {
+        const promise = this.contract.tokenURI(tokenId);
+
+        result.push(promise);
+
+        return result;
+      }, uriReduceInit);
+
+      const tokenUris = await Promise.all(uriPromises);
+
+      // 상품 IPFS 정보 가져오기
+
+      const productReduceInit: Array<any> = [];
+      const productPromises = tokenUris.reduce((result, uri) => {
+        const ipfsHash = uri.substring(21);
+        const promise = this.getIpfs(ipfsHash);
+
+        result.push(promise);
+
+        return result;
+      }, productReduceInit);
+
+      const products = await Promise.all(productPromises);
+
+      this._products.set(products);
+      this.done();
+
+      return tokenIds;
+    } catch (e) {
+      console.log(e);
+
+      this._error.set(e);
+      this.done();
+
+      throw new Error('상품을 가져오는데 실패했습니다.');
     }
-
-    const tokenIds = await Promise.all(indexPromises);
-
-    // Token URI 가져오기
-
-    const uriReduceInit: Array<string> = [];
-    const uriPromises = tokenIds.reduce((result, tokenId) => {
-      const promise = this.contract.tokenURI(tokenId);
-
-      result.push(promise);
-
-      return result;
-    }, uriReduceInit);
-
-    const tokenUris = await Promise.all(uriPromises);
-
-    // 상품 IPFS 정보 가져오기
-
-    const productReduceInit: Array<any> = [];
-    const productPromises = tokenUris.reduce((result, uri) => {
-      const ipfsHash = uri.substring(21);
-      const promise = this.getIpfs(ipfsHash);
-
-      result.push(promise);
-
-      return result;
-    }, productReduceInit);
-
-    const products = await Promise.all(productPromises);
-
-    this._products.set(products);
-    this.done();
-
-    return tokenIds;
   }
 
   async getIpfs(ipfsHash: string) {

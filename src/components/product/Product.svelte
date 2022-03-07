@@ -5,8 +5,6 @@
   export let description = 'MacBook-pro M1X 16inch';
   export let image = 'https://place-hold.it/320x180?text=16x9&fontsize=23';
   export let category = '전자제품/IT';
-
-  $: console.log(image);
 </script>
 
 <div class="card-container">

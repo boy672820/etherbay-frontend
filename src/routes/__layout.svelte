@@ -16,27 +16,31 @@
 
   let open = true;
 
+  const handleSignature = async (accountAddress: string) => {
+    console.log('Signature call!');
+    const nonce = await user.getNonce(accountAddress);
+    const signature = await user.personalSign(nonce);
+
+    const data = {
+      username: accountAddress,
+      password: signature
+    };
+    const jwt = await user.signIn(data);
+
+    window.localStorage.setItem('accessToken', jwt);
+    axios.defaults.headers.Authorization = `Bearer ${jwt}`;
+  };
+
   onMount(async () => {
     const provider = await user.connectMetamask();
     const isAuth = user.setAuth();
 
-    if (!isAuth) {
+    user.onAccountsChanged(handleSignature);
 
-      if (provider) {
-        const { accountAddress } = provider;
+    if (!isAuth && provider) {
+      const { accountAddress } = provider;
 
-        const nonce = await user.getNonce(accountAddress);
-        const signature = await user.personalSign(nonce);
-
-        const data = {
-          username: accountAddress,
-          password: signature
-        };
-        const jwt = await user.signIn(data);
-
-        window.localStorage.setItem('accessToken', jwt);
-        axios.defaults.headers.Authorization = `Bearer ${jwt}`;
-      }
+      handleSignature(accountAddress);
     }
   });
 </script>

@@ -64,6 +64,20 @@ class UserStore {
     return { signer, accountAddress };
   }
 
+  async onAccountsChanged(callback: (accountAddress: string) => void) {
+    if (!browser || !window?.ethereum) {
+      return false;
+    }
+
+    window.ethereum.on('accountsChanged', async (accounts: string) => {
+      const accountAddress = accounts[0];
+
+      this._accountAddress.set(accountAddress);
+
+      callback(accountAddress);
+    });
+  }
+
   logout() {
     this._accountAddress.set(null);
     this._signer.set(null);
