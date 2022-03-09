@@ -24,18 +24,18 @@
 </svelte:head>
 
 <LayoutGrid>
-  <Cell span={3}>
-    {#if $products}
-      {#each $products as data}
+  {#if $products}
+    {#each $products as data}
+      <Cell span={3}>
         <Product
           name={data.name}
           description={data.description}
           image={data.image}
           category={data.attributes[0].value}
         />
-      {/each}
-    {/if}
-  </Cell>
+      </Cell>
+    {/each}
+  {/if}
 </LayoutGrid>
 
 <DialogLoading open={$isLoading} />
