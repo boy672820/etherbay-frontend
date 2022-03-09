@@ -1,4 +1,5 @@
 export const variables = {
+  rootUrl: import.meta.env.VITE_ROOT_URL as string,
   // api
   apiUrl: import.meta.env.VITE_API_URL as string,
   // ethereum

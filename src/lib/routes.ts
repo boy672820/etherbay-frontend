@@ -1,10 +1,12 @@
-const ROOT_URL = 'http://34.64.122.129';
+import { variables } from "$lib/variables";
+
+const root = variables.rootUrl;
 
 export const routes = {
-  unauthorized: `${ROOT_URL}/401`,
-  index: `${ROOT_URL}/`,
+  unauthorized: `${root}/401`,
+  index: `${root}/`,
   product: {
-    my: `${ROOT_URL}/product/my`,
-    create: `${ROOT_URL}/product/create`
+    my: `${root}/product/my`,
+    create: `${root}/product/create`
   }
 };
