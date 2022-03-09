@@ -1,4 +1,4 @@
-const ROOT_URL = 'http://127.0.0.1:3000';
+const ROOT_URL = 'http://34.64.122.129';
 
 export const routes = {
   unauthorized: `${ROOT_URL}/401`,
