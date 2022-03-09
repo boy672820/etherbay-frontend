@@ -15,7 +15,7 @@
     handleClose();
 
     if (accountAddress) {
-      goto(routes.product.my(accountAddress));
+      goto(routes.product.my);
     }
   };
 </script>

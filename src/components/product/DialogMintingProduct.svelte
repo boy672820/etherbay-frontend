@@ -34,7 +34,7 @@
   </Content>
   <Actions>
     {#if accountAddress}
-      <Button href={routes.product.my(accountAddress)}>
+      <Button href={routes.product.my}>
         <Label>내 상품으로 이동</Label>
       </Button>
     {/if}

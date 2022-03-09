@@ -4,23 +4,23 @@
   import LayoutGrid, { Cell } from '@smui/layout-grid';
   // components
   import Product from '../../components/product/Product.svelte';
+  import DialogLoading from '../../components/DialogLoading.svelte';
   // store
   import { user } from '../../store/user';
   import { productStore } from '../../store/product';
-  import DialogLoading from '../../components/DialogLoading.svelte';
 
-  const { signer } = user;
+  const { signer, accountAddress } = user;
   const { isLoading, products } = productStore;
 
   $: {
-    if ($signer && $page.params.accountAddress) {
-      productStore.connect($signer).getProducts($page.params.accountAddress);
+    if ($signer && $accountAddress) {
+      productStore.connect($signer).getUserProducts($accountAddress);
     }
   }
 </script>
 
 <svelte:head>
-  <title>etherBay | {$page.params.accountAddress}의 상품</title>
+  <title>etherBay | 내 상품</title>
 </svelte:head>
 
 <LayoutGrid>

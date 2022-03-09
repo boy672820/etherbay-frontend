@@ -46,7 +46,7 @@
         <Item>
           <Graphic class="material-icons">card_giftcard</Graphic>
           <Text
-            ><Button href={routes.product.my($accountAddress)}><Label>내 상품</Label></Button
+            ><Button href={routes.product.my}><Label>내 상품</Label></Button
             ></Text
           >
         </Item>

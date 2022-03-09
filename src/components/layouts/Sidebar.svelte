@@ -5,19 +5,13 @@
   // modules
   import { page } from '$app/stores';
   import { routes } from '$lib/routes';
-  // store
-  import { user } from '../../store/user';
-
-  const { accountAddress } = user;
 
   export let open = true;
 
-  const menu = [{ path: routes.index, name: '전체 상품' }];
-
-  accountAddress.subscribe(
-    (accountAddress) =>
-      accountAddress && menu.push({ path: routes.product.my(accountAddress), name: '내 상품' })
-  );
+  let menu = [
+    { path: routes.index, name: '전체 상품' },
+    { path: routes.product.my, name: '내 상품' },
+  ];
 </script>
 
 <Drawer variant="dismissible" bind:open>
@@ -26,7 +20,7 @@
   </Header>
   <Content>
     <List>
-      {#each menu as { path, name }, i}
+      {#each menu as { path, name }, _i}
         <Item href={path} activated={$page.url.pathname === path}>
           <Text>{name}</Text>
         </Item>

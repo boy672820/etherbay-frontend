@@ -1,7 +1,7 @@
 import axios from '$lib/axios';
 import { variables } from '$lib/variables';
 import type { JsonRpcSigner } from '@ethersproject/providers';
-import { Contract, ethers } from 'ethers';
+import { BigNumber, Contract, ethers } from 'ethers';
 import { derived, writable, type Writable } from 'svelte/store';
 import type { MintedProduct, ProductFormData, Products } from '../@types/product';
 import abi from '../abi/EtherbayProduct.abi.json';
@@ -12,7 +12,8 @@ class ProductStore {
     private readonly _isLoading: Writable<boolean> = writable(false),
     private readonly _error: Writable<any> = writable(null),
     private readonly _product: Writable<MintedProduct | null> = writable(null),
-    private readonly _products: Writable<Products[] | null> = writable(null)
+    private readonly _products: Writable<Products[] | null> = writable(null),
+    private readonly _allProducts: Writable<Products[] | null> = writable(null)
   ) {}
 
   get isLoading() {
@@ -31,6 +32,10 @@ class ProductStore {
     return derived([this._products], ([$products]) => $products);
   }
 
+  get allProducts() {
+    return derived([this._allProducts], ([$allProducts]) => $allProducts);
+  }
+
   private ready() {
     this._isLoading.set(true);
   }
@@ -46,6 +51,10 @@ class ProductStore {
   }
 
   // -----------------------------------------------------------------------
+
+  async initProduct() {
+    this._product.set(null);
+  }
 
   async createProduct({ name, description, image, category }: ProductFormData) {
     const formData = new FormData();
@@ -72,11 +81,76 @@ class ProductStore {
     }
   }
 
-  async initProduct() {
-    this._product.set(null);
+  // -----------------------------------------------------------------------
+
+  private async getAllTokenUri(tokenIds: Array<number | string | BigNumber>) {
+    const uriReduceInit: Array<string> = [];
+    const uriPromises = tokenIds.reduce((result, tokenId) => {
+      const promise = this.contract.tokenURI(tokenId);
+
+      result.push(promise);
+
+      return result;
+    }, uriReduceInit);
+
+    const uris = await Promise.all(uriPromises);
+
+    return uris;
   }
 
-  async getProducts(accountAddress: string) {
+  private async getAllIpfsByUri(uris: Array<string>) {
+    const ipfsReduceInit: Array<any> = [];
+    const ipfsPromises = uris.reduce((result, uri) => {
+      const ipfsHash = uri.substring(21);
+      const promise = this.getIpfs(ipfsHash);
+
+      result.push(promise);
+
+      return result;
+    }, ipfsReduceInit);
+
+    const ipfs = await Promise.all(ipfsPromises);
+
+    return ipfs;
+  }
+
+  async getProducts() {
+    this.ready();
+
+    try {
+      const bigNumber = await this.contract.totalSupply();
+
+      // Token ID 가져오기
+
+      const balance = bigNumber.toNumber();
+      const indexPromises: Array<Promise<any>> = [];
+
+      for (let i = 0; balance > i; i += 1) {
+        const promise = this.contract.tokenByIndex(i);
+        indexPromises.push(promise);
+      }
+
+      const tokenIds = await Promise.all(indexPromises);
+
+      // // Token URI 가져오기
+      const tokenUris = await this.getAllTokenUri(tokenIds);
+
+      // // 상품 IPFS 정보 가져오기
+      const products = await this.getAllIpfsByUri(tokenUris);
+
+      this._allProducts.set(products);
+      this.done();
+
+      return products;
+    } catch (e) {
+      this._error.set(e);
+      this.done();
+
+      throw new Error('상품을 가져오는데 실패했습니다.');
+    }
+  }
+
+  async getUserProducts(accountAddress: string) {
     this.ready();
 
     try {
@@ -95,39 +169,16 @@ class ProductStore {
       const tokenIds = await Promise.all(indexPromises);
 
       // Token URI 가져오기
-
-      const uriReduceInit: Array<string> = [];
-      const uriPromises = tokenIds.reduce((result, tokenId) => {
-        const promise = this.contract.tokenURI(tokenId);
-
-        result.push(promise);
-
-        return result;
-      }, uriReduceInit);
-
-      const tokenUris = await Promise.all(uriPromises);
+      const tokenUris = await this.getAllTokenUri(tokenIds);
 
       // 상품 IPFS 정보 가져오기
-
-      const productReduceInit: Array<any> = [];
-      const productPromises = tokenUris.reduce((result, uri) => {
-        const ipfsHash = uri.substring(21);
-        const promise = this.getIpfs(ipfsHash);
-
-        result.push(promise);
-
-        return result;
-      }, productReduceInit);
-
-      const products = await Promise.all(productPromises);
+      const products = await this.getAllIpfsByUri(tokenUris);
 
       this._products.set(products);
       this.done();
 
       return tokenIds;
     } catch (e) {
-      console.log(e);
-
       this._error.set(e);
       this.done();
 

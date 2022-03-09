@@ -4,7 +4,7 @@ export const routes = {
   unauthorized: `${ROOT_URL}/401`,
   index: `${ROOT_URL}/`,
   product: {
-    my: (accountAddress: string) => `${ROOT_URL}/product/${accountAddress}`,
+    my: `${ROOT_URL}/product/my`,
     create: `${ROOT_URL}/product/create`
   }
 };
